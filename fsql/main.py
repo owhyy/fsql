@@ -1,6 +1,7 @@
 import logging
 import re
 from collections import defaultdict
+from itertools import chain
 from typing import Any
 
 from faker import Faker
@@ -13,9 +14,11 @@ class SQLFaker:
         arguments: list[str],
         count: int,
         generate_ids: bool,
-        id_field_name: str,
+        id_field_name: str | None,
+        locale: str | None,
     ) -> None:
-        self.faker = Faker()
+        locale = locale or "ro_RO"
+        self.faker = Faker(locale)
         self.arguments = arguments
         self.count = count
         self.db_name = db_name
@@ -96,8 +99,9 @@ class SQLFaker:
                 + f"{self.db_name} ({self.id_field_name + ', ' if self.generate_ids else ''}{', '.join(key for key in self.generated.keys())})"
                 + " VALUES",
                 ",\n".join(
-                    f"({str(index+1) + ', ' if self.generate_ids else ''}{value})"
-                    for index, value in enumerate(list(self.generated.values())[0])
+                    f"{str(index+1) + ', ' if self.generate_ids else ''}"
+                    + str(value).replace("\\n", " ")
+                    for index, value in enumerate(zip(*self.generated.values()))
                 )
                 + ";",
             )

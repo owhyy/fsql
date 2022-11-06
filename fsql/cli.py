@@ -5,10 +5,10 @@ from .main import SQLFaker
 
 def cli():
     usage_str = """
-    fsql name 10 -o insert.sql
-    fsql first_name last_name age:[10:60] 3 -c
-    fsql foo:first_name married:bool 15 -n
-    fsql city 'climate:[cold, mild, hot]' 10 -i city_id
+    fsql Person name 10 -o insert.sql en_EN
+    fsql Person first_name last_name age:[10:60] 3 -c
+    fsql Teacher foo:first_name married:bool 15 -n
+    fsql City city 'climate:[cold, mild, hot]' 10 -i city_id
     """
 
     parser = argparse.ArgumentParser(
@@ -18,9 +18,9 @@ def cli():
     parser.add_argument(
         "Name",
         nargs=1,
-        metavar="database name",
+        metavar="table name",
         type=str,
-        help="the name of the database",
+        help="the name of the table",
     )
     parser.add_argument(
         "Values", nargs="+", metavar="values", type=str, help="the values to generate"
@@ -64,16 +64,29 @@ def cli():
         type=str,
         required=False,
     )
+    parser.add_argument(
+        "-l",
+        "--locale",
+        help="specify the locale (ro_RO) is default",
+        metavar="LOCALE",
+        nargs=1,
+        type=str,
+        required=False,
+    )
 
     args = parser.parse_args()
-    print(args)
+
+    id_field_name = None
+    if args.noid and args.idname:
+        id_field_name = args.idname[0]
 
     fakesql = SQLFaker(
         args.Name[0],
         args.Values,
         args.Count[0],
         generate_ids=args.noid,
-        id_field_name=args.idname[0],
+        id_field_name=id_field_name,
+        locale=args.locale[0] if args.locale else None,
     )
 
     if args.copy:
