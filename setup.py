@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import find_packages, setup
 
 setup(
     name="fsql",
@@ -6,9 +6,11 @@ setup(
     description="Fake SQL Insert Statement Generator",
     author="Babin Ion",
     author_email="owhy4100@gmail.com",
-    packages=["fsql", "tests"],
-    keywords="command line todo list",
+    url="https://github.com/owhyy/fsql",
+    packages=find_packages(exclude=('tests',)),
+    keywords="sql faker mock",
     license="MIT",
+    setup_requires=("Faker==15.2.0",),
     python_requires=">=3.10",
     extras_require={"tests": {"pytest==7.1.3", "pytest-mock==3.10.0"}},
     classifiers=[
